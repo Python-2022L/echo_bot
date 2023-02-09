@@ -53,8 +53,10 @@ while True:
     chat_id, text, update_id = get_last_updates(result)
     print(f"LAST_UPDATE:{last_update_id} \t UPDATE: {update_id}")
     if update_id != last_update_id:
-        
-        send_message(chat_id, text)
+        if text == '/start':
+            send_message(chat_id, "Echo Botga hush kelibsiz")
+        else:
+            send_message(chat_id, text)
         last_update_id = update_id
     sleep(2)
 
