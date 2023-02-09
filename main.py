@@ -1,8 +1,15 @@
 import requests
+from pprint import pprint
+from time import sleep
+TOKEN = '5661659754:AAHjcXFhVC9UdI0Q83YBMReNptJXBXFFESs'
 
-TOKEN = '5661659754:AAGPPm7mkuylCre31dUmOBcXN3cgULdoqSQ'
+def get_updates():
+    url = f"https://api.telegram.org/bot{TOKEN}/getUpdates"
+    response = requests.get(url)
+    data = response.json() 
+    return data['result']
 
-def get_last_updates():
+def get_last_updates(result):
     """
     Use this function to get updates from Telegram.
 
@@ -12,8 +19,13 @@ def get_last_updates():
         int(chat_id): Telegram chat id
         str(text): Message text
         int(update_id): Telegram update id
-    """
-    pass
+    """ 
+    message = result[-1]
+    update_id = message['update_id']
+    chat_id = message['message']['chat']['id']
+    text = message['message']['text']
+
+    return chat_id, text, update_id
 
 def send_message(chat_id, text):
     """
@@ -25,4 +37,24 @@ def send_message(chat_id, text):
     Returns:
         None
     """
-    pass
+    params = {
+        "chat_id": chat_id,
+        "text": text
+    }
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+    response = requests.get(url, params=params)
+    data = response.json()
+    return data
+
+last_update_id = -1
+
+while True:
+    result = get_updates()
+    chat_id, text, update_id = get_last_updates(result)
+    print(f"LAST_UPDATE:{last_update_id} \t UPDATE: {update_id}")
+    if update_id != last_update_id:
+        
+        send_message(chat_id, text)
+        last_update_id = update_id
+    sleep(2)
+
